@@ -1,11 +1,37 @@
-import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View } from "react-native";
+import React from "react";
+import axios from "axios";
+import { StyleSheet, Text, TextInput, View, Button } from "react-native";
 
 export default function App() {
+  const [searchCep, setSearchCep] = React.useState(null);
+  const [infoCep, setInfoCep] = React.useState({});
+
+  const getCep = async () => {
+    const { data } = await axios.get(
+      `http://viacep.com.br/ws/${searchCep}/json/`
+    );
+    setInfoCep(data);
+  };
+
   return (
     <View style={styles.container}>
-      <Text>Olá mundo!</Text>
-      <StatusBar style="auto" />
+      <View style={styles.containerSearch}>
+        <TextInput
+          placeholder="Digite um Cep:"
+          value={searchCep}
+          onChangeText={(text) => setSearchCep(text)}
+        />
+        <Button title="Buscar" onPress={getCep} />
+      </View>
+
+      {infoCep && (
+        <View>
+          <Text>Rua: {infoCep.logradouro}</Text>
+          <Text>Bairro: {infoCep.bairro}</Text>
+          <Text>Cidade {infoCep.localidade}: </Text>
+          <Text>Estado: {infoCep.uf}</Text>
+        </View>
+      )}
     </View>
   );
 }
